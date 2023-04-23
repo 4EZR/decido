@@ -1,0 +1,49 @@
+
+:root {
+    /* Yellow main */
+    --yellow-main: #FFCF01;
+    /* Orange main */
+    --orange-main: #FF7F1C;
+    /* Blue main */
+    --blue-main: #0D6EF9;
+    /* Text color */
+    --text-main: #4B4D4C;
+    /* Secondary text color */
+    --text-secondary: #929395;
+  }
+
+
+@font-face {
+    font-family: 'Apercu Bold';
+    src: url('../Assets/fonts/apercu_bold.woff2') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Apercu Regular';
+    src: url('../Assets/fonts/apercu_regular.woff2') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+.bg-orange{
+      background-color: var(--orange-main)!important;
+}
+
+.text-orange{
+    color: var(--orange-main)!important;
+}
+
+.bg-blue{
+    background-color: var(--blue-main)!important;
+}
+
+*{
+    font-family: 'Apercu Regular', sans-serif;
+}
+
+.heading{
+    font-family: 'Apercu Bold', sans-serif;;
+}
