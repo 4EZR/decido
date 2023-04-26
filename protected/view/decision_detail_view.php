@@ -34,12 +34,15 @@ require_once '../model/desicion_model.php';
     <div class="row d-flex justify-content-between my-3">
       <div class="col-md-6">
           <div class="card shadow-sm me-2 p-2 border-0 bg-yellow text-center d-flex justify-content-center align-items-center">
+
+          <p class="m-0 p-0 heading fw-bold h2"><i class='bx bx-pointer bx-tada' ></i></p>
             <p class="m-0 p-0 heading fw-bold h2">Alternative</p>
           </div>
       </div>
       <div class="col-md-6">
         <div class="card shadow-sm me-2 p-2 border-0 bg-yellow text-center d-flex justify-content-center align-items-center">
-          <p class="m-0 p-0 heading fw-bold h2">criteria</p>
+        <p class="m-0 p-0 heading fw-bold h2"><i class='bx bx-search-alt bx-tada' ></i></p> 
+        <p class="m-0 p-0 heading fw-bold h2">criteria</p>
         </div>
     </div>
     </div>
@@ -47,11 +50,13 @@ require_once '../model/desicion_model.php';
     <div class="row d-flex justify-content-between my-3">
       <div class="col-md-6">
           <div class="card shadow-sm me-2 p-2 border-0 bg-yellow text-center d-flex justify-content-center align-items-center">
+            <p class="m-0 p-0 heading fw-bold h2"><i class='bx bx-move-horizontal bx-tada bx-flip-vertical' ></i></p>
             <p class="m-0 p-0 heading fw-bold h2">Trade Off</p>
           </div>
       </div>
       <div class="col-md-6">
         <div class="card shadow-sm me-2 p-2 border-0 bg-yellow text-center d-flex justify-content-center align-items-center">
+        <p class="m-0 p-0 heading fw-bold h2"><i class='bx bx-line-chart bx-tada' ></i></p>
           <p class="m-0 p-0 heading fw-bold h2">Result</p>
         </div>
     </div>
