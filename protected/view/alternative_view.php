@@ -34,10 +34,10 @@ require_once '../model/desicion_model.php';
     <div class="row d-flex justify-content-between my-3">
 
     <div class="col-md-6">
-        <div class="card criteria-card shadow-sm me-2 p-2 border-0 bg-yellow text-center d-flex justify-content-center align-items-center">
+        <div class="card shadow-sm me-2 p-2 border-0 bg-yellow text-center d-flex justify-content-center align-items-center">
         <p class="m-0 p-0 heading fw-bold h2"><i class='bx bx-search-alt bx-tada' ></i></p> 
         <p class="m-0 p-0 heading fw-bold h2">criteria</p>
-      </div>
+        </div>
     </div>
       <div class="col-md-6">
           <div class="card shadow-sm me-2 p-2 border-0 bg-yellow text-center d-flex justify-content-center align-items-center">
@@ -46,7 +46,7 @@ require_once '../model/desicion_model.php';
             <p class="m-0 p-0 heading fw-bold h2">Alternative</p>
           </div>
       </div>
-     
+    
     </div>
 
     <div class="row d-flex justify-content-between my-3">
@@ -67,16 +67,5 @@ require_once '../model/desicion_model.php';
   </div>
 </section>
 </body>
-<script>
-   $('.criteria-card').on('click', function() {
-    // Construct the URL with the ID as a parameter
-
-    var cardId = <?= $cardID; ?>;
-    var url = 'criteria_view.php?id=' + cardId;
-
-    // Redirect to the next page
-    window.location.href = url;
-  });
-</script>
 
 </html>
