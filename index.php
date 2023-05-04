@@ -61,7 +61,9 @@
           echo  '<p class="p-0 mt-2 fs-3">' . $decision['decision_Title'] . '</p>';
 
           echo '<p class="text-secondary fw-normal  mb-3 p-0"><small>' . $decision['decision_Date'] . '</small></p>';
+          
           echo '</div>';
+          
           echo '</div>';
         }
 
