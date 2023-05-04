@@ -24,6 +24,8 @@ require_once '../model/desicion_model.php';
   $decisionModel = new Decision_Model($pdo);
   $decision = $decisionModel->get_decision_byID($cardID);
   require_once('navbar.php');
+
+  
 ?>
 </section>
 <section id="content-2" class=" bg-white py-4 ">
