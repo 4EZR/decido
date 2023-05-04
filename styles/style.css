@@ -10,6 +10,7 @@
     --text-main: #4B4D4C;
     /* Secondary text color */
     --text-secondary: #929395;
+    --bg-dbrown: #413D45;
     --bg-brown: #FBF7F4;
   }
 
@@ -61,7 +62,9 @@
 .bg-brown{
     background-color: var(--bg-brown)!important;
 }
-
+.bg-dbrown{
+    background-color: var(--bg-dbrown)!important;
+}
 *{
     font-family: 'Apercu Regular', sans-serif;
 }
@@ -82,6 +85,23 @@
     -webkit-background-size: cover;
     background-size: cover;
 }
+
+.container-criteria:after{
+    border-radius: 50%;
+    bottom: 18vw;
+    content: "";
+    display: block;
+    height: 36vw;
+    left: 0;
+    position: absolute;
+    -webkit-transform: scale(2);
+    -moz-transform: scale(2);
+    -ms-transform: scale(2);
+    transform: scale(2);
+    width: 100vw;
+    z-index: -1;
+}
+
 
 .decision-card{
     cursor:pointer;
