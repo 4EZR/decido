@@ -33,5 +33,13 @@ class Criteria_Model {
         return $result;
     }
 
+    public function insert_alternative($criteriaID, $alternativeID, $weight) {
+        $stmt = $this->db->prepare("INSERT INTO `alternative_weight` (`Criteria_ID`, `Alternative_ID`, `Weight`) VALUES (?, ?, ?)");
+        $stmt->bind_param("iii", $criteriaID, $alternativeID, $weight);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
     
 }?>

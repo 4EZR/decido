@@ -31,8 +31,13 @@ class Alternative_Model
     }
 
 
-    public function update_alternative($alternativeID,$criteriaID,$weight){
-        
+    public function update_alternative($alternativeID, $criteriaID, $weight) {
+        $stmt = $this->db->prepare("UPDATE `alternative_weight` SET `Weight` = ? WHERE `Alternative_ID` = ? AND `Criteria_ID` = ?");
+        $stmt->bind_param("iii", $weight, $alternativeID, $criteriaID);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
     }
+    
 }
 ?>
