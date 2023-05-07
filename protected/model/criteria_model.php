@@ -11,7 +11,7 @@ class Criteria_Model {
     
     // Add decision
     public function add_criteria($title, $term, $decisionID) {
-        $stmt = $this->db->prepare("INSERT INTO `criterias`(`criteria_Title`, `linguistic_term`, `Decision_ID`) VALUES (?,?,?)");
+        $stmt = $this->db->prepare("INSERT INTO `criterias`(`Criteria_Title`, `Linguistic_term`, `Decision_ID`) VALUES (?,?,?)");
         $stmt->execute([$title, $term, $decisionID]);
         $stmt->closeCursor();
     }
