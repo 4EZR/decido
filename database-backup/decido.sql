@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 06, 2023 at 07:10 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Generation Time: May 08, 2023 at 12:18 AM
+-- Server version: 10.4.20-MariaDB
+-- PHP Version: 8.0.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,6 +24,42 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `alternatives`
+--
+
+CREATE TABLE `alternatives` (
+  `Alternative_ID` int(11) NOT NULL,
+  `Alternative_Title` varchar(255) NOT NULL,
+  `Decision_ID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `alternatives`
+--
+
+INSERT INTO `alternatives` (`Alternative_ID`, `Alternative_Title`, `Decision_ID`) VALUES
+(1, 'Alternative 1', 1),
+(2, 'alternative 2', 1),
+(3, 'Alternative3', 1),
+(4, 'qwewqe', 1),
+(5, '123', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `alternative_weight`
+--
+
+CREATE TABLE `alternative_weight` (
+  `Weight_ID` int(11) NOT NULL,
+  `Criteria_ID` int(11) NOT NULL,
+  `Alternative_ID` int(11) NOT NULL,
+  `Weight` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `criterias`
 --
 
@@ -33,7 +69,7 @@ CREATE TABLE `criterias` (
   `Linguistic_Term` int(11) NOT NULL,
   `Decision_ID` int(11) NOT NULL,
   `Criteria_Importance` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `criterias`
@@ -41,12 +77,13 @@ CREATE TABLE `criterias` (
 
 INSERT INTO `criterias` (`criteria_ID`, `Criteria_Title`, `Linguistic_Term`, `Decision_ID`, `Criteria_Importance`) VALUES
 (1, '123123', 1, 2, 0),
-(2, 'Eat shit broo', 8, 1, 3),
+(2, 'Eat shit broo', 8, 1, 4),
 (3, 'test', 1, 1, 2),
-(4, 'criteria 1', 1, 1, 1),
-(5, 'tesf', 1, 1, 4),
+(4, 'criteria 1', 1, 1, 3),
+(5, 'tesf', 1, 1, 5),
 (6, 'hello', 1, 3, 1),
-(7, 'EASY', 1, 3, 2);
+(7, 'EASY', 1, 3, 2),
+(8, 'new criteria', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -60,7 +97,7 @@ CREATE TABLE `decisions` (
   `decision_Status` tinyint(1) DEFAULT 0,
   `decision_Date` datetime NOT NULL DEFAULT current_timestamp(),
   `UserID` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `decisions`
@@ -91,7 +128,7 @@ CREATE TABLE `linguistic_terms` (
   `TermLevel_3` varchar(255) NOT NULL,
   `TermLevel_4` varchar(255) NOT NULL,
   `TermLevel_5` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `linguistic_terms`
@@ -112,6 +149,18 @@ INSERT INTO `linguistic_terms` (`Term_ID`, `TermLevel_1`, `TermLevel_2`, `TermLe
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `alternatives`
+--
+ALTER TABLE `alternatives`
+  ADD PRIMARY KEY (`Alternative_ID`);
+
+--
+-- Indexes for table `alternative_weight`
+--
+ALTER TABLE `alternative_weight`
+  ADD PRIMARY KEY (`Weight_ID`);
 
 --
 -- Indexes for table `criterias`
@@ -136,10 +185,22 @@ ALTER TABLE `linguistic_terms`
 --
 
 --
+-- AUTO_INCREMENT for table `alternatives`
+--
+ALTER TABLE `alternatives`
+  MODIFY `Alternative_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `alternative_weight`
+--
+ALTER TABLE `alternative_weight`
+  MODIFY `Weight_ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `criterias`
 --
 ALTER TABLE `criterias`
-  MODIFY `criteria_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `criteria_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `decisions`
