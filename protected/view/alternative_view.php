@@ -147,8 +147,7 @@
 
    
 
-    console.log('Alternative ID:', alternativeId, 'Criteria ID:', criteriaId, 'Term ID:', termId);
-   
+      
   });
 
   $('')

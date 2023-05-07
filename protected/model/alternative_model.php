@@ -38,6 +38,22 @@ class Alternative_Model
         $stmt->close();
         return $result;
     }
-    
+
+    public function insert_alternative($criteriaID, $alternativeID, $weight) {
+        $stmt = $this->db->prepare("INSERT INTO `alternative_weight` (`Criteria_ID`, `Alternative_ID`, `Weight`) VALUES (?, ?, ?)");
+        $stmt->bind_param("iii", $criteriaID, $alternativeID, $weight);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public function get_alternative_weight($alternativeID, $criteriaID) {
+        $stmt = $this->db->prepare("SELECT `Weight` FROM `alternative_weight` WHERE `Alternative_ID` = ? AND `Criteria_ID` = ?");
+        $stmt->bind_param("ii", $alternativeID, $criteriaID);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['Weight'] ?? null;
+    }
 }
 ?>
