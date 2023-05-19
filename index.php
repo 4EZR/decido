@@ -38,13 +38,17 @@
   </section>
   <section id="content-2" class=" bg-white py-4 ">
     <div class="container-xxl">
-      <p class="h2 fw-bold heading text-main">My Decisions</p>
-      <p class="text-secondary">Overview of my desicions</p>
+      <div class='d-flex justify-content-between align-items-center'>
+        <div>
+          <p class="h2 fw-bold heading text-main">My Decisions</p>
+          <p class="text-secondary">Overview of my desicions</p>
+        </div>
+        <div>
+          <input class="form-control me-2" type="search" placeholder="Search" id='searchBar' aria-label="Search">
+        </div>
+      </div>
 
-      <div class="row">
-
-
-
+      <div id='search_results' class="row">
         <?php
         foreach ($decisions as $decision) {
 
@@ -61,9 +65,9 @@
           echo  '<p class="p-0 mt-2 fs-3">' . $decision['decision_Title'] . '</p>';
 
           echo '<p class="text-secondary fw-normal  mb-3 p-0"><small>' . $decision['decision_Date'] . '</small></p>';
-          
+
           echo '</div>';
-          
+
           echo '</div>';
         }
 
@@ -76,15 +80,59 @@
 </body>
 
 <script>
-  $('.decision-card').on('click', function() {
-    // Construct the URL with the ID as a parameter
+$(document).on('click', '.decision-card', function() {
+  // Construct the URL with the ID as a parameter
+  var cardId = $(this).attr('data-id');
+  var url = 'protected/view/decision_detail_view.php?id=' + cardId;
 
-    var cardId = $(this).attr('data-id');
-    var url = 'protected/view/decision_detail_view.php?id=' + cardId;
-
-    // Redirect to the next page
-    window.location.href = url;
+  // Redirect to the next page
+  window.location.href = url;
+});
+  $('#searchBar').on('input', function() {
+    var search_term = $('#searchBar').val().trim();
+    $.ajax({
+      url: 'protected/controller/search_decision.php',
+      method: 'POST',
+      data: {
+        search: search_term
+      },
+      success: function(returnData) {
+        var results = JSON.parse(returnData);
+        $('#search_results').html('');
+        if (results.length === 0) { // Check if the results array is empty
+          $('#search_results').append('<div class="col-md-12 my-3"><p>No decision found.</p></div>');
+        } else {
+          $.each(results, function(index, decision) {
+            var decisionHtml = generateDecisionHtml(decision);
+            var $decisionDiv = $(decisionHtml);
+            $('#search_results').append($decisionDiv);
+            $decisionDiv.fadeIn(400);
+          });
+        }
+      }
+    });
   });
+
+  function generateDecisionHtml(decision) {
+    var statusHtml = '';
+    if (decision.decision_Status == '0') {
+      statusHtml = '<span class="rounded-1 p-1 fs-6 shadow-sm text-secondary bg-orange border-0  mx-2 text-white fw-normal">incomplete</span>';
+    }
+
+    var html = `
+    <div class='col-md-3 my-3' style='display: none;'>
+      <div class="card p-2 bg-yellow decision-card border-0 shadow-sm d-flex align-items-start justify-content-start text-start" data-id="${decision.decision_ID}">
+        <div class="d-flex">
+          <span class="rounded-1 p-1 fs-6 shadow-sm text-secondary bg-primary text-white fw-normal">decision</span>
+          ${statusHtml}
+        </div>
+        <p class="p-0 mt-2 fs-3">${decision.decision_Title}</p>
+        <p class="text-secondary fw-normal  mb-3 p-0"><small>${decision.decision_Date}</small></p>
+      </div>
+    </div>
+  `;
+    return html;
+  }
 </script>
 
 <div class="modal fade" id="AddDesicion-Modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

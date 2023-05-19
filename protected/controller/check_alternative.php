@@ -5,19 +5,19 @@
 require_once '../../protected/model/alternative_model.php';
 require_once '../../conn.php';
 
-$criteriaID = $_POST['criteriaID'];
-$alternativeID = $_POST['alternativeID'];
+$criteriaID = $_POST['Criteria_ID'];
+$alternativeID = $_POST['Alternative_ID'];
 
 // Create a new instance of your DB class
 
 
 
 
-$criteriaModel = new Criteria_Model($pdo);
+$alternativeModel = new Alternative_Model($pdo);
 
 
 // Call the get_weight function to check if the alternative exists
-$weight = $criteriaModel->($criteriaID, $alternativeID);
+$weight = $alternativeModel->get_alternative_weight($alternativeID, $criteriaID);
 
 // Check if a weight was returned
 if ($weight !== null) {

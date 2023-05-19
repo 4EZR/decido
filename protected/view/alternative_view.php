@@ -127,6 +127,26 @@
               var option = $('<option></option>').text(term.txt).attr('value', term.id);
               select.append(option);
             });
+
+            $.ajax({
+              url: '../controller/check_alternative.php',
+              method: 'POST',
+              data: {
+                Alternative_ID: alternative.id,
+                Criteria_ID: criterion.id
+              },
+              dataType: 'json',
+              success: function(response) {
+                // Set the selected option based on the weight value
+                if(response.status === 'success'){
+                  select.val(response.weight);
+                }
+                
+              },
+              error: function(xhr, status, error) {
+                // Handle the error
+              }
+            });
             criterionCell.append(select);
             row.append(criterionCell);
           });
@@ -142,15 +162,63 @@
     var $select = $(this);
     var alternativeId = $select.data('alternative-id');
     var criteriaId = $select.data('criteria-id');
-    var termId = $select.val();
+    var weight = $select.val();
 
-
-   
-
-      
-  });
-
-  $('')
+    $.ajax({
+      url: '../controller/check_alternative.php',
+      method: 'POST',
+      data: {
+        Criteria_ID: criteriaId,
+        Alternative_ID: alternativeId
+      },
+      dataType: 'json',
+      success: function(response) {
+        console.log(response);
+        if (response.status == 'success') {
+          // Run update function
+          $.ajax({
+            url: '../controller/update_alternative_weight.php',
+            method: 'POST',
+            data: {
+              Criteria_ID: criteriaId,
+              Alternative_ID: alternativeId,
+              weight: weight
+            },
+            dataType: 'json',
+            success: function(response) {
+              console.log(response);
+              alert('success');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              console.log(textStatus, errorThrown);
+            }
+          });
+        } else {
+          // Run insert function
+          $.ajax({
+            url: '../controller/add_alternative_weight.php',
+            method: 'POST',
+            data: {
+              Criteria_ID: criteriaId,
+              Alternative_ID: alternativeId,
+              weight: weight
+            },
+            dataType: 'json',
+            success: function(response) {
+              console.log(response);
+              alert('success');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              console.log(textStatus, errorThrown);
+            }
+          });
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(textStatus, errorThrown);
+      }
+    });
+  }).trigger('change');
 </script>
 
 </html>
