@@ -9,6 +9,7 @@ $decisionModel = new Decision_Model($pdo);
 $alternativeModel = new Alternative_Model($pdo);
 $id = isset($_POST['id']) ? $_POST['id'] : '';
 
+$id = 11;
 $Matrix = $decisionModel->get_decision_matrix_data($id);
 
 $fuzzy_decision_matrix = [];
@@ -213,10 +214,10 @@ function calculate_distance_closeness_triangular_fuzzy($weighted_matrix, $pis_ni
             $pis = $pis_nis_matrix[$criterion]['pis'];
    
 
-            $distance_pis = pow($values['L'] - $pis, 2) + pow($values['M'] - $pis, 2)*4 + pow($values['U'] - $pis, 2);
+            $distance_pis = pow($values['L'] - $pis, 2) + pow($values['M'] - $pis, 2) + pow($values['U'] - $pis, 2);
            
             $criterion_distance[$criterion] = [
-                'distance_pis' => round( sqrt($distance_pis / 6),2),
+                'distance_pis' => round( sqrt($distance_pis / 3),2),
      
             ];
         }
