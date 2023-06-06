@@ -11,7 +11,7 @@
     /* Secondary text color */
     --text-secondary: #929395;
     --bg-dbrown: #413D45;
-    --bg-brown: #FBF7F4;
+    --bg-brown: #f5f2ed;
     --bg-gray: #403d44;
     --bg-dgray: #2c282e;
   }
@@ -121,9 +121,7 @@
     left: 8%!important;
  }
 
- .note-div{
 
- }
  .icon-note {
 
     transition: color 0.3s ease-in;
@@ -139,3 +137,9 @@
     background-position: top left, top right;
     background-size: 50% 100%, 50% 100%;
   }
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: #f0f0f0; /* Change this to your desired circle color */
+  }
+

@@ -15,7 +15,7 @@
     <title>Decido</title>
 </head>
 
-<body >
+<body>
 
     <?php
     $cardID = $_GET['id'];
@@ -46,6 +46,27 @@
                 <div class="col-6">
                     <h1 class='heading text-muted'>Fuzzy Vikor</h1>
                     <canvas id="myChart2"></canvas>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="container-xxl py-5">
+
+
+                    <p class="text-main heading h3 my-3 text-muted">Comparision Chart</p>
+
+                    <div class='row'>
+                        <div class="col-6">
+                            <canvas id="myChart3"></canvas>
+                        </div>
+                        <div class="col-6 d-flex justify-content-center align-items-center">
+                            <canvas id="myChart4"></canvas>
+                        </div>
+                    </div>
+
+
+
+
                 </div>
 
             </div>
@@ -134,8 +155,18 @@
         'rgb(153, 102, 255)',
         'rgb(255, 159, 64)'
     ]
-    let myChart, myChart2;
+    let myChart, myChart2, myChart3, myChart4;
     $(document).ready(function() {
+        let topsisData, vikorData;
+        let requestsCompleted = 0;
+
+        function checkRequestsCompleted() {
+            if (requestsCompleted === 2) {
+                createRadarChart(topsisData, vikorData);
+                createSimilarityChart(topsisData, vikorData);
+            }
+        }
+
         $.ajax({
             url: '../controller/topsis_rank.php',
             type: 'POST',
@@ -143,10 +174,13 @@
                 id: <?= $cardID ?>
             },
             success: function(response) {
-                const matrixData = JSON.parse(response);
-                createTopsisChart(matrixData);
+                topsisData = JSON.parse(response);
+                createTopsisChart(topsisData);
+                requestsCompleted++;
+                checkRequestsCompleted();
             }
         });
+
         $.ajax({
             url: '../controller/vikor_rank.php',
             type: 'POST',
@@ -154,15 +188,17 @@
                 id: <?= $cardID ?>
             },
             success: function(response) {
-                const matrixData = JSON.parse(response);
-                createVikorChart(matrixData);
+                vikorData = JSON.parse(response);
+                createVikorChart(vikorData);
+                requestsCompleted++;
+                checkRequestsCompleted();
             }
         });
-
     });
     $('.importance-criteria-select').change(function() {
         var criteriaId = $(this).attr("data-id");
         var importance_level = $(this).val();
+        let topsisData, vikorData;
         $.ajax({
             url: '../controller/update_importance.php',
             method: 'POST',
@@ -181,8 +217,14 @@
                         id: <?= $cardID ?>
                     },
                     success: function(response) {
-                        const matrixData = JSON.parse(response);
-                        createTopsisChart(matrixData);
+                        topsisData = JSON.parse(response);
+
+                        createTopsisChart(topsisData);
+                        if (vikorData) {
+                            createRadarChart(topsisData, vikorData);
+                            createSimilarityChart(topsisData, vikorData);
+                        }
+
                     }
                 });
                 $.ajax({
@@ -192,8 +234,13 @@
                         id: <?= $cardID ?>
                     },
                     success: function(response) {
-                        const matrixData = JSON.parse(response);
-                        createVikorChart(matrixData);
+                        vikorData = JSON.parse(response);
+
+                        createVikorChart(vikorData);
+                        if (topsisData) {
+                            createRadarChart(topsisData, vikorData);
+                            createSimilarityChart(topsisData, vikorData);
+                        }
                     }
                 });
             },
@@ -204,6 +251,78 @@
 
 
     });
+
+
+    function createSimilarityChart(topsisData, vikorData) {
+        const labels = topsisData.map(data => data.alternative_name);
+        const topsisRank = topsisData.map(data => data.rank);
+
+        // Sort VIKOR data according to the order of alternatives in TOPSIS data
+        const sortedVikorData = topsisData.map(topsisAlternative => {
+            return Object.values(vikorData).find(vikorAlternative => vikorAlternative.alternative_name === topsisAlternative.alternative_name);
+        });
+
+        const vikorRank = sortedVikorData.map(data => data.rank);
+
+        const diagonalLineData = topsisRank.map(x => ({
+            x,
+            y: x
+        }));
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                    label: 'Alternatives',
+                    data: labels.map((label, index) => ({
+                        x: topsisRank[index],
+                        y: vikorRank[index]
+                    })),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                },
+                {
+                    label: 'Diagonal Line',
+                    data: diagonalLineData,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                    showLine: true,
+                    pointRadius: 0
+                }
+            ]
+        };
+
+        const config = {
+            type: 'scatter',
+            data: data,
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'TOPSIS Rank'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'VIKOR Rank'
+                        }
+                    }
+                }
+            }
+        };
+
+        if (myChart4) {
+            myChart4.destroy();
+        }
+
+        const ctx = document.getElementById('myChart4').getContext('2d');
+        myChart4 = new Chart(ctx, config);
+    }
 
     function createTopsisChart(matrixData) {
         const labels = matrixData.map(data => data.alternative_name);
@@ -287,6 +406,108 @@
                 }
             }
         });
+
+    }
+
+    function calculateNormalizationFactors(topsisData, vikorData) {
+        const topsisCCValues = topsisData.map(item => item.cc);
+        const vikorQValues = Object.values(vikorData).map(item => item.q_value);
+
+        const minTopsis = Math.min(...topsisCCValues);
+        const maxTopsis = Math.max(...topsisCCValues);
+        const minVikor = Math.min(...vikorQValues);
+        const maxVikor = Math.max(...vikorQValues);
+
+        const normalizeTopsis = value => 2 * (value - minTopsis) / (maxTopsis - minTopsis);
+        const normalizeVikor = value => 2 * (value - minVikor) / (maxVikor - minVikor);
+
+        const normalizedTopsisData = topsisData.map(item => ({
+            ...item,
+            cc: normalizeTopsis(item.cc)
+        }));
+
+        const normalizedVikorData = Object.fromEntries(
+            Object.entries(vikorData).map(([key, value]) => [key, {
+                ...value,
+                q_value: normalizeVikor(value.q_value)
+            }])
+        );
+
+        return {
+            normalizedTopsisData,
+            normalizedVikorData
+        };
+    }
+
+    function createRadarChart(topsisData, vikorData) {
+        const labels = topsisData.map(data => data.alternative_name);
+        const topsisCC = topsisData.map(data => data.cc);
+        const maxTopsisCC = Math.max(...topsisCC);
+        const normalizedTopsisCC = topsisCC.map(cc => cc / maxTopsisCC * 2);
+
+        const sortedData = Object.values(vikorData).sort((a, b) => a.rank - b.rank);
+        const vikorQ = sortedData.map(data => data.q_value);
+        const maxVikorQ = Math.max(...vikorQ);
+        const normalizedVikorQ = vikorQ.map(q => q / maxVikorQ * 2);
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                    label: `Fuzzy VIKOR (Normalized Q value) - Multiplied by ${(2 / maxVikorQ).toFixed(2)}`,
+                    data: normalizedVikorQ,
+                    fill: true,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                },
+                {
+                    label: `Fuzzy TOPSIS (Normalized CC value) - Multiplied by ${(2 / maxTopsisCC).toFixed(2)}`,
+                    data: normalizedTopsisCC,
+                    fill: true,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }
+            ]
+        };
+
+        const config = {
+            type: 'radar',
+            data: data,
+            options: {
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 2,
+                        ticks: {
+                            stepSize: 0.5
+                        }
+                    }
+                }
+            }
+        };
+
+        if (myChart3) {
+            myChart3.destroy();
+        }
+
+        const ctx = document.getElementById('myChart3').getContext('2d');
+        myChart3 = new Chart(ctx, config);
     }
 </script>
 

@@ -36,7 +36,7 @@
       <div class="row d-flex justify-content-between my-3">
 
         <div class="col-md-6">
-          <div class="card criteria-card pattern-zigzag-lg text-orange position-relative shadow-sm me-2 p-4 border-0 bg-yellow text-start d-flex justify-content-center align-items-start">
+          <div class="card criteria-card pattern-grid-xl  text-orange position-relative shadow-sm me-2 p-4 border-0 bg-yellow text-start d-flex justify-content-center align-items-start">
          
              <div class='d-flex justify-content-start text-start'>
                <p class="m-0 p-0 fw-bold heading h3 text-start text-dark"><i class='bx bx-search-alt bx-tada'></i></p>
@@ -53,7 +53,7 @@
         </div>
 
         <div class="col-md-6 my-md-0 my-5">
-          <div class="card alternative-card pattern-horizontal-stripes-lg text-orange position-relative shadow-sm me-2 p-4 border-0 bg-yellow text-start d-flex justify-content-center align-items-start">
+          <div class="card alternative-card pattern-grid-xl  text-orange position-relative shadow-sm me-2 p-4 border-0 bg-yellow text-start d-flex justify-content-center align-items-start">
          
              <div class='d-flex justify-content-start text-start'>
                <p class="m-0 p-0 fw-bold heading h3 text-start text-dark"><i class='bx bx-pointer bx-tada'></i></p>
@@ -75,11 +75,11 @@
       <div class="row d-flex justify-content-between my-md-5 my-0">
 
       <div class="col-md-6">
-          <div class="card trade-card pattern-grid-md text-orange position-relative shadow-sm me-2 p-4 border-0 bg-yellow text-start d-flex justify-content-center align-items-start">
+          <div class="card trade-card pattern-grid-xl text-orange position-relative shadow-sm me-2 p-4 border-0 bg-yellow text-start d-flex justify-content-center align-items-start">
          
              <div class='d-flex justify-content-start text-start'>
                <p class="m-0 p-0 fw-bold heading h3 text-start text-dark"><i class='bx bx-pointer bx-tada'></i></p>
-               <p class="m-0 p-0 fw-bold heading h4 text-start text-dark">Trade Off</p>
+               <p class="m-0 p-0 fw-bold heading h4 text-start text-dark">Trade-Off Analysis</p>
              </div>
             <div class="note-div p-3 bg-white rounded shadow-sm">
               <small><p class='text-muted m-0 p-0'>note</p></small>
@@ -93,7 +93,7 @@
        
 
         <div class="col-md-6 my-5 my-md-0">
-          <div class="card result-card pattern-triangles-lg text-orange position-relative shadow-sm me-2 p-4 border-0 bg-yellow text-start d-flex justify-content-center align-items-start">
+          <div class="card result-card pattern-grid-xl text-orange position-relative shadow-sm me-2 p-4 border-0 bg-yellow text-start d-flex justify-content-center align-items-start">
          
              <div class='d-flex justify-content-start text-start'>
                <p class="m-0 p-0 fw-bold heading h3 text-start text-dark"><i class='bx bx-line-chart bx-tada'></i></p>
@@ -112,43 +112,193 @@
 
     </div>
   </section>
+  <script src="https://cdn.jsdelivr.net/npm/@mojs/core"></script>
 </body>
 <script>
-  $('.criteria-card').on('click', function() {
+  
+  function showNotification(type, text) {
+    new Noty({
+      type: type,
+      layout: "topRight",
+      text: text,
+      timeout: 2000,
+      animation: {
+        open: function(promise) {
+          var n = this;
+          var Timeline = new mojs.Timeline();
+          var body = new mojs.Html({
+            el: n.barDom,
+            x: {
+              500: 0,
+              delay: 0,
+              duration: 500,
+              easing: 'elastic.out'
+            },
+            isForce3d: true,
+            onComplete: function() {
+              promise(function(resolve) {
+                resolve();
+              })
+            }
+          });
 
-    var cardId = <?= $cardID; ?>;
-    var url = 'criteria_view.php?id=' + cardId;
-    window.location.href = url;
-  });
+          var parent = new mojs.Shape({
+            parent: n.barDom,
+            width: 200,
+            height: n.barDom.getBoundingClientRect().height,
+            radius: 0,
+            x: {
+              [150]: -150
+            },
+            duration: 1.2 * 500,
+            isShowStart: true
+          });
 
-  $('.alternative-card').on('click', function() {
+          n.barDom.style['overflow'] = 'visible';
+          parent.el.style['overflow'] = 'hidden';
 
-    var cardId = <?= $cardID; ?>;
-    var url = 'alternative_view.php?id=' + cardId;
-    window.location.href = url;
-  });
+          var burst = new mojs.Burst({
+            parent: parent.el,
+            count: 10,
+            top: n.barDom.getBoundingClientRect().height + 75,
+            degree: 90,
+            radius: 75,
+            angle: {
+              [-90]: 40
+            },
+            children: {
+              fill: '#EBD761',
+              delay: 'stagger(500, -50)',
+              radius: 'rand(8, 25)',
+              direction: -1,
+              isSwirl: true
+            }
+          });
 
-  $('.trade-card').on('click', function() {
+          var fadeBurst = new mojs.Burst({
+            parent: parent.el,
+            count: 2,
+            degree: 0,
+            angle: 75,
+            radius: {
+              0: 100
+            },
+            top: '90%',
+            children: {
+              fill: '#EBD761',
+              pathScale: [.65, 1],
+              radius: 'rand(12, 15)',
+              direction: [-1, 1],
+              delay: .8 * 500,
+              isSwirl: true
+            }
+          });
 
-    var cardId = <?= $cardID; ?>;
-    var url = 'tradeoff_view.php?id=' + cardId;
-    window.location.href = url;
-  });
+          Timeline.add(body, burst, fadeBurst, parent);
+          Timeline.play();
+        },
+        close: function(promise) {
+          var n = this;
+          new mojs.Html({
+            el: n.barDom,
+            x: {
+              0: 500,
+              delay: 10,
+              duration: 500,
+              easing: 'cubic.out'
+            },
+            skewY: {
+              0: 10,
+              delay: 10,
+              duration: 500,
+              easing: 'cubic.out'
+            },
+            isForce3d: true,
+            onComplete: function() {
+              promise(function(resolve) {
+                resolve();
+              })
+            }
+          }).play();
+        }
+      }
+    }).show();
+  }
+  $(document).ready(function() {
+    // Replace with the actual decision ID
+    var decision_id = <?= $cardID; ?>;
 
+    $.ajax({
+    type: "POST",
+    url: "../controller/front_Controller_Decision.php?action=checkCriteria",
+    data: { decision_id: decision_id },
+    dataType: "json",
+    async: false,
+    success: function(response) {
+        criteriaValid = response.status;
+    }
+});
 
-  $('.alternative-card').on('click', function() {
+$.ajax({
+    type: "POST",
+    url: "../controller/front_Controller_Decision.php?action=checkAlternative",
+    data: { decision_id: decision_id },
+    dataType: "json",
+    async: false,
+    success: function(response) {
+        alternativeValid = response.status;
+    }
+});
 
-    var cardId = <?= $cardID; ?>;
-    var url = 'alternative_view.php?id=' + cardId;
-    window.location.href = url;
-  });
+    if (!criteriaValid) {
+        $('.alternative-card').removeClass('bg-yellow text-orange').addClass('bg-danger text-dark');
+    }
+    if (!alternativeValid || !criteriaValid)  {
+        $('.trade-card').removeClass('bg-yellow text-orange').addClass('bg-danger text-dark');
+        $('.result-card').removeClass('bg-yellow text-orange').addClass('bg-danger text-dark');
+    }
+    
+});
+$('.criteria-card').on('click', function() {
 
-  $('.result-card').on('click', function() {
+        var cardId = <?= $cardID; ?>;
+        var url = 'criteria_view.php?id=' + cardId;
+        window.location.href = url;
+   
+    
+});
 
-    var cardId = <?= $cardID; ?>;
-    var url = 'result_view.php?id=' + cardId;
-    window.location.href = url;
-  });
+$('.alternative-card').on('click', function() {
+    if (criteriaValid) {
+        
+            var cardId = <?= $cardID; ?>;
+            var url = 'alternative_view.php?id=' + cardId;
+            window.location.href = url;
+        
+    } else {
+        showNotification('error', 'Criteria is not valid. Please complete the criteria step first.');
+    }
+});
+
+$('.trade-card').on('click', function() {
+    if (criteriaValid && alternativeValid) {
+        var cardId = <?= $cardID; ?>;
+        var url = 'tradeoff_view.php?id=' + cardId;
+        window.location.href = url;
+    } else {
+        showNotification('error', 'Please complete the criteria and alternative steps first.');
+    }
+});
+
+$('.result-card').on('click', function() {
+    if (criteriaValid && alternativeValid) {
+        var cardId = <?= $cardID; ?>;
+        var url = 'result_view.php?id=' + cardId;
+        window.location.href = url;
+    } else {
+        showNotification('error', 'Please complete the criteria and alternative steps first.');
+    }
+});
 </script>
 
 </html>

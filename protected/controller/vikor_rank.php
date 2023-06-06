@@ -211,13 +211,18 @@ function calculate_distance_closeness_triangular_fuzzy($weighted_matrix, $pis_ni
 
         foreach ($alternative as $criterion => $values) {
             $pis = $pis_nis_matrix[$criterion]['pis'];
-   
+            $nis = $pis_nis_matrix[$criterion]['nis'];
 
             $distance_pis = pow($values['L'] - $pis, 2) + pow($values['M'] - $pis, 2)*4 + pow($values['U'] - $pis, 2);
-           
+            $distance_nis = pow($values['L'] - $nis, 2) + pow($values['M'] - $nis, 2)*4 + pow($values['U'] - $nis, 2);
+
+            $distance_pis_nis = pow($pis - $nis, 2) + pow($pis - $nis, 2)*4 + pow($pis - $nis, 2);
+            $d_ij = round( sqrt($distance_pis / 6) / (sqrt($distance_pis_nis / 6)), 2);
+
             $criterion_distance[$criterion] = [
                 'distance_pis' => round( sqrt($distance_pis / 6),2),
-     
+                'distance_nis' => round( sqrt($distance_nis / 6),2),
+                'd_ij' => $d_ij,
             ];
         }
 
@@ -238,7 +243,7 @@ function vikor($data, $weights, $v = 0.5) {
     foreach ($data as $alternative => $criteria) {
         $weighted_distances = [];
         foreach ($criteria as $criterion => $values) {
-            $weighted_distances[] = $values['distance_pis'] * $weights[$criterion];
+            $weighted_distances[] = $values['d_ij'] * $weights[$criterion];
         }
         $si[$alternative] = array_sum($weighted_distances);
         $ri[$alternative] = max($weighted_distances);

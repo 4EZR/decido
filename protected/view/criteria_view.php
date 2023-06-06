@@ -36,12 +36,19 @@
 
     $terms = $termModel->get_linguistic_term();
     $criterias = $criteriaModel->get_criterias($cardID);
-    $importanceLevels = ['Very Not Important', 'Not Important', 'Neutral', 'Important', 'Very Important'];
+
     require_once('navbar.php');
     ?>
 
     <section id="content-2" class="container-criteria bg-dbrown py-4 ">
         <div class="container-xxl">
+            <nav style="--bs-breadcrumb-divider: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%228%22 height=%228%22%3E%3Cpath d=%22M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z%22 fill=%22white%22/%3E%3C/svg%3E');" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item text-decoration-none text-white "><a class='text-decoration-none text-white text-orange' href="../../index.php">Home</a></li>
+                    <li class="breadcrumb-item text-decoration-none text-white"><a class='text-decoration-none text-white text-orange' href="decision_detail_view.php?id=<?= $cardID ?>">Decision Detail</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">Library</li>
+                </ol>
+            </nav>
             <div class='m-0 p-0  '>
                 <p class="h2 fw-bold heading text-white">Criteria</p>
                 <p class="h5 text-white fw-normal"><?= $decision['decision_Title']; ?></p>
@@ -54,26 +61,41 @@
 
 
             <p class="text-secondary">List of Criteria</p>
-            <button class='sort-criteria-btn btn btn-primary'><i class='bx bx-sort'></i>Sort</button>
-
-            <div id='criteria-list' class="d-flex">
 
 
-
+            <div id='criteria-list' class="d-flex align-items-stretch flex-wrap">
                 <?php
+                $importanceLevels = ['Very Not Important', 'Not Important', 'Neutral', 'Important', 'Very Important'];
+                $counter = 0;
                 foreach ($criterias as $criteria) {
-
-                    echo "<div class='criteria-item  m-3' data-id='" . $criteria['criteria_ID'] . "'>";
-                    echo '<div class="card p-3 bg-yellow  border-0 shadow-sm d-flex align-items-start justify-content-start text-start" data-id="' . $criteria['criteria_ID'] . '">';
+                    $counter++;
+                    echo "<div class='criteria-item  me-5 mb-5' data-id='" . $criteria['criteria_ID'] . "'>";
+                    echo '<div class="card p-3 bg-brown  border-0 shadow-sm d-flex align-items-start justify-content-start text-start" data-id="' . $criteria['criteria_ID'] . '">';
 
                     echo '<div class="d-flex">';
                     //echo  '<span class="rounded-1 p-1 fs-6 shadow-sm text-secondary bg-primary text-white fw-normal">' . $decision['decision_Title'] . '</span>';
 
                     echo '</div>';
-                    echo  '<p class="p-0 mt-2 fs-3">' . $criteria['Criteria_Title'] . '</p>';
+                    echo '<div class="d-flex w-100 justify-content-between align-items-center">';
+
+                    echo  '<p class="p-0 m-0 fs-1 text-orange heading">C' . $counter . '</p>';
+                    echo '<div class="btn-group dropstart">
+          <button type="button" class="btn bg-brown  p-0 m-0 rounded-1  menu-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bx bx-dots-vertical-rounded h3 m-0 p-0"></i>
+          </button>
+          <ul class="dropdown-menu m-0 p-0">
+             <li class="m-0 p-0"><a class="dropdown-item edit-btn fw-bold p-2" data-id="' . $criteria['criteria_ID'] . '" href="#">Edit Decision</a></li>
+            <li><hr class="dropdown-divider m-0 p-0"></li>
+            <li class="m-0 p-0"><a class="dropdown-item del-btn fw-bold p-2 text-danger" data-id="' . $decision['decision_ID'] . '" href="#"><i class="bx bxs-trash-alt"></i> Delete Decision</a></li>
+          </ul>
+        </div>';
+                    echo '</div>';
+                    echo  '<p class="p-0 mt-2 fs-3 heading">' . $criteria['Criteria_Title'] . '</p>';
+                    echo "<select class='form-select-sm form-select importance-criteria-select border border-primary border-3' data-id='" . $criteria['criteria_ID'] . "'>";
 
                     echo "<p class='text-secondary fw-normal  mb-3 p-0'><small> " . $criteria['TermLevel_1'] . ", " . $criteria['TermLevel_2'] . ", " . $criteria['TermLevel_3'] . ", " . $criteria['TermLevel_4'] . ", " . $criteria['TermLevel_5'] .  "</small></p>";
-                    echo "<select class='form-select-sm form-select importance-criteria-select' data-id='" . $criteria['criteria_ID'] . "'>";
+
+                    echo "<option value='0'>Please select one</option>"; // Add this line for the 0 value option
                     foreach ($importanceLevels as $index => $level) {
                         $optionValue = $index + 1; // Use 1-based indexing
                         $selected = ($criteria['Criteria_Importance'] == $optionValue) ? 'selected' : '';
@@ -89,7 +111,6 @@
 
             </div>
 
-            <button id='save-criteria-btn' class='btn btn-primary'>Save</button>
 
 
         </div>
@@ -112,12 +133,43 @@
                     </div>
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Input Desicion title</label>
-                        <select class="form-select" name='term' aria-label="Default select example">
-                            <?php
-                            foreach ($terms as $term) {
-                                echo "<option value='" . $term['Term_ID'] . "'>" . $term['TermLevel_1'] . ", " . $term['TermLevel_2'] . ", " . $term['TermLevel_3'] . ", " . $term['TermLevel_4'] . ", " . $term['TermLevel_5'] . "</option>";
-                            }
-                            ?>
+                        <select class="form-select" name='type' aria-label="Default select example">
+                            <option selected>Select Type</option>
+                            <option value="0">Benefit Type</option>
+                            <option value="1">Cost Type</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="EditCriteria-Modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Criteria</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="../controller/add_criteria_controller.php" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Input Criteria</label>
+                        <input type="text" name="title" class="form-control" id="#input-desicion-title" aria-describedby="emailHelp">
+
+                        <input type="hidden" name='criteriaID' class="form-control" id="hidden-criteria">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Input Criteria Type</label>
+                        <select class="form-select" name='type' aria-label="Default select example">
+                            <option selected>Select Type</option>
+                            <option value="0">Benefit Type</option>
+                            <option value="1">Cost Type</option>
                         </select>
                     </div>
                 </div>
@@ -131,7 +183,29 @@
 </div>
 
 <script>
+    $(document).on('click', '.edit-btn', function(event) {
+        var cardId = $(this).attr('data-id');
+
+        $('#hidden-criteria').val(cardId);
+        // $('#EditDesicion-Modal').find('input#Input-Edit-DecisionTitle').val(decisionTitle);
+        $('#EditCriteria-Modal').modal('show');
+    });
     $(document).ready(function() {
+        const criteriaItems = document.querySelectorAll('.criteria-item');
+
+        // Find the maximum height of the elements
+        let maxHeight = 0;
+        criteriaItems.forEach(item => {
+            const itemHeight = item.offsetHeight;
+            if (itemHeight > maxHeight) {
+                maxHeight = itemHeight;
+            }
+        });
+
+        // Apply the maximum height to all elements
+        criteriaItems.forEach(item => {
+            item.style.height = maxHeight + 'px';
+        });
 
         $('.importance-criteria-select').change(function() {
             var criteriaId = $(this).attr("data-id");
@@ -152,89 +226,9 @@
                     console.log(textStatus, errorThrown);
                 }
             });
-
-        
         });
-        $('#save-criteria-btn').hide();
-    //     $('.sort-criteria-btn').click(function() {
-    //         $('.sort-criteria-btn').prop('disabled', true);
-    //         $('#save-criteria-btn').show();
-    //         var importanceLevels = ['Very Not Important', 'Not Important', 'Neutral', 'Important', 'Very Important'];
-    //         var levelsContainer = $('<div>').addClass('d-flex ').attr('id', 'levels-container').hide();
-    //         importanceLevels.forEach(function(level, index) {
-    //             var levelDiv = $('<div>').addClass('m-3 level-div p-5 bg-light rounded-3 w-100').attr('data-level', index + 1).html('<p class="text-muted fw-bold heading-drag">' + level + '</p>');
-    //             levelsContainer.append(levelDiv);
-    //         });
-    //         $('#criteria-list').after(levelsContainer);
 
-    //         // ...
-    //         levelsContainer.show();
-
-    //         // Add dragula to the level divs as containers
-    //         var levelDivs = Array.from(document.getElementsByClassName('level-div'));
-    //         var drake = dragula([document.getElementById('criteria-list'), ...levelDivs], {
-    //             moves: function(el, container, handle) {
-    //                 return $(handle).closest('.criteria-item').length > 0;
-    //             }
-    //         });
-
-    //         // ...
-
-    //         // Modify the dragula event to store the updated importance level
-    //         drake.on('drag', function(el, source) {
-    //             el.style.zIndex = 1000;
-    //         });
-    //         drake.on('dragend', function(el) {
-    //             el.style.zIndex = '';
-    //             var container = el.parentElement;
-    //             var heading = container.querySelector('.heading-drag');
-    //             if (heading) {
-    //                 container.insertBefore(heading, container.firstChild);
-    //             }
-    //             var newImportanceLevel = heading.dataset.level;
-    //             $(el).find('.criteria-item').data('new-importance-level', newImportanceLevel);
-
-    //         });
-    //         $('#save-criteria-btn').click(function() {
-
-    //             $('.level-div').each(function() {
-    //                 $(this).find('.criteria-item').appendTo('#criteria-list');
-    //             });
-
-    //             $('#levels-container').remove(); // Remove the #levels-container div
-    //             $('#criteria-list').show(); // Show the criteria list
-
-    //             levelsContainer.hide();
-    //             drake.destroy();
-
-    //             // Call Ajax for each criteria with updated importance level
-    //             $('#save-criteria-btn').on('click', function() {
-    //                 $('.criteria-item').each(function() {
-    //                     var criteriaId = $(this).data('id');
-    //                     var newImportanceLevel = $(this).data('new-importance-level');
-
-    //                     $.ajax({
-    //                         url: '../controller/update_importance.php',
-    //                         method: 'POST',
-    //                         data: {
-    //                             criteria_id: criteriaId,
-    //                             importance_level: 5
-    //                         },
-    //                         success: function(response) {
-    //                             console.log(response);
-    //                         },
-    //                         error: function(jqXHR, textStatus, errorThrown) {
-    //                             console.log(textStatus, errorThrown);
-    //                         }
-    //                     });
-
-    //                 });
-    //             });
-    //             $('#save-criteria-btn').hide();
-    //             $('.sort-criteria-btn').prop('disabled', false);
-    //         });
-    //     });
-     });
+    });
 </script>
 
 </html>
