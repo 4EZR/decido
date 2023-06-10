@@ -18,7 +18,7 @@ class Criteria_Model {
     
     // Get all decisions
     public function get_criterias($decisionID) {
-        $stmt = $this->db->prepare("SELECT * FROM `criterias` c INNER JOIN `linguistic_terms` t on t.Term_ID = c.linguistic_term  WHERE `Decision_ID` = ? ORDER BY c.criteria_ID,c.Criteria_Importance");
+        $stmt = $this->db->prepare("SELECT * FROM `criterias` c WHERE `Decision_ID` = ? ORDER BY c.criteria_ID");
         $stmt->execute([$decisionID]);
         $criterias = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();

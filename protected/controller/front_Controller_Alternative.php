@@ -1,11 +1,11 @@
 <?php 
 
-require_once '../model/criteria_model.php';
+require_once '../model/alternative_model.php';
 require_once '../../conn.php';
-require_once 'criteria_controller.php';
-$model = new Criteria_Model($pdo);
+require_once 'alternative_controller.php';
+$model = new Alternative_Model($pdo);
 
-$controller = new Criteria_Controller($model);
+$controller = new Alternative_Controller($model);
 
 if (isset($_GET['action'])) {
     $action = $_GET['action'];

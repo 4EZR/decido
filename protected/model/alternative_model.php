@@ -19,7 +19,22 @@ class Alternative_Model
         $stmt->execute([$title, $decisionID]);
         $stmt->closeCursor();
     }
+    public function edit_alternative($alternativeID, $title) {
+        $sql = "UPDATE alternatives SET Alternative_Title = :title WHERE Alternative_ID = :alternative_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':alternative_id', $alternativeID, PDO::PARAM_INT);
+        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+        $result = $stmt->execute();
+        return $result;
+    }
 
+    public function delete_alternative($alternativeID) {
+        $sql = "DELETE FROM alternatives WHERE Alternative_ID = :alternative_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':alternative_id', $alternativeID, PDO::PARAM_INT);
+        $result = $stmt->execute();
+        return $result;
+    }
     // Get all decisions
 
     public function get_alternative($decisionID)
