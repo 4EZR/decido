@@ -11,7 +11,9 @@
     /* Secondary text color */
     --text-secondary: #929395;
     --bg-dbrown: #413D45;
-    --bg-brown: #FBF7F4;
+    --bg-brown: #f5f2ed;
+    --bg-gray: #403d44;
+    --bg-dgray: #2c282e;
   }
 
 
@@ -65,6 +67,13 @@
 .bg-dbrown{
     background-color: var(--bg-dbrown)!important;
 }
+.bg-dgray{
+    background-color: var(--bg-gray)!important;
+}
+
+.bg-ddgray{
+    background-color: var(--bg-dgray)!important;
+}
 *{
     font-family: 'Apercu Regular', sans-serif;
 }
@@ -104,3 +113,37 @@
     pointer-events: none;
 
 }
+.decision-card {
+    transition: opacity 0.5s ease-in;
+  }
+
+ .start-25{
+    left: 8%!important;
+ }
+
+
+ .icon-note {
+
+    transition: color 0.3s ease-in;
+  }
+  
+  .note-div:hover .icon-note {
+    color: var(--bg-dgray) !important; /* Change this to the color you want on hover */
+  }
+
+  .test-wave{
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"%3E%3Cpath d="M0,100 C30,0 70,0 100,100 Z" fill="%23f0f0f0" /%3E%3C/svg%3E'), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"%3E%3Cpath d="M0,0 C30,100 70,100 100,0 Z" fill="%23f0f0f0" /%3E%3C/svg%3E');
+    background-repeat: no-repeat, no-repeat;
+    background-position: top left, top right;
+    background-size: 50% 100%, 50% 100%;
+  }
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: #f0f0f0; /* Change this to your desired circle color */
+  }
+
+  .criteria-item {
+    flex: 0 0 calc(100% / 3); /* Adjust the number 3 according to the desired number of items per row */
+    max-width: calc(100% / 3); /* Make sure the max-width matches the flex-basis value */
+  }

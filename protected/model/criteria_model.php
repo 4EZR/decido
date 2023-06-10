@@ -10,15 +10,15 @@ class Criteria_Model {
     }
     
     // Add decision
-    public function add_criteria($title, $term, $decisionID) {
-        $stmt = $this->db->prepare("INSERT INTO `criterias`(`Criteria_Title`, `Linguistic_term`, `Decision_ID`) VALUES (?,?,?)");
-        $stmt->execute([$title, $term, $decisionID]);
+    public function add_criteria($title, $term, $type,$decisionID) {
+        $stmt = $this->db->prepare("INSERT INTO `criterias`(`Criteria_Title`, `Linguistic_term`,`Criteria_Type`, `Decision_ID`) VALUES (?,?,?,?)");
+        $stmt->execute([$title, $term,$type,$decisionID]);
         $stmt->closeCursor();
     }
     
     // Get all decisions
     public function get_criterias($decisionID) {
-        $stmt = $this->db->prepare("SELECT * FROM `criterias` c INNER JOIN `linguistic_terms` t on t.Term_ID = c.linguistic_term  WHERE `Decision_ID` = ? ORDER BY c.Criteria_Importance");
+        $stmt = $this->db->prepare("SELECT * FROM `criterias` c WHERE `Decision_ID` = ? ORDER BY c.criteria_ID");
         $stmt->execute([$decisionID]);
         $criterias = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
@@ -32,7 +32,18 @@ class Criteria_Model {
         $stmt->closeCursor();
         return $result;
     }
-
+    public function delete_criteria($criteriaID) {
+        $stmt = $this->db->prepare("DELETE FROM `criterias` WHERE `criteria_ID` = ?");
+        $result = $stmt->execute([$criteriaID]);
+        $stmt->closeCursor();
+        return $result;
+    }
+    public function edit_criteria($criteriaID, $title, $term, $type) {
+        $stmt = $this->db->prepare("UPDATE `criterias` SET `Criteria_Title` = ?, `Linguistic_term` = ?, `Criteria_Type` = ? WHERE `criteria_ID` = ?");
+        $result = $stmt->execute([$title, $term, $type, $criteriaID]);
+        $stmt->closeCursor();
+        return $result;
+    }
  
     
 }?>

@@ -1,0 +1,139 @@
+
+:root {
+    /* Yellow main */
+    --yellow-main: #FFCF01;
+    /* Orange main */
+    --orange-main: #FF7F1C;
+    /* Blue main */
+    --blue-main: #0D6EF9;
+    /* Text color */
+    --text-main: #4B4D4C;
+    /* Secondary text color */
+    --text-secondary: #929395;
+    --bg-dbrown: #413D45;
+    --bg-brown: #FBF7F4;
+    --bg-gray: #403d44;
+    --bg-dgray: #2c282e;
+  }
+
+
+@font-face {
+    font-family: 'Apercu Bold';
+    src: url('../Assets/fonts/apercu_bold.woff2') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Apercu Regular';
+    src: url('../Assets/fonts/apercu_regular.woff2') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* orange */
+.bg-orange{
+      background-color: var(--orange-main)!important;
+}
+
+
+.text-orange{
+    color: var(--orange-main)!important;
+}
+
+/* blue */
+.bg-blue{
+    background-color: var(--blue-main)!important;
+}
+
+/* yellow */
+
+.bg-yellow{
+    background-color: var(--yellow-main)!important;
+}
+
+/* gray */
+.text-main{
+    color: var(--text-main);
+}
+
+.text-secondary{
+    color:var(--text-secondary);
+}
+
+.bg-brown{
+    background-color: var(--bg-brown)!important;
+}
+.bg-dbrown{
+    background-color: var(--bg-dbrown)!important;
+}
+.bg-dgray{
+    background-color: var(--bg-gray)!important;
+}
+
+.bg-ddgray{
+    background-color: var(--bg-dgray)!important;
+}
+*{
+    font-family: 'Apercu Regular', sans-serif;
+}
+
+.heading{
+    font-family: 'Apercu Bold', sans-serif;;
+}
+
+#content-1{
+    -webkit-mask: url(../Assets/images/wave-bg.svg) no-repeat bottom;
+    mask: url(../Assets/images/wave-bg.svg) no-repeat bottom;
+    background-image: url('../Assets/images/bg-pattern.svg');
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    width: 100%;
+    -webkit-background-position: center;
+    background-position: center;
+    -webkit-background-size: cover;
+    background-size: cover;
+}
+
+
+.decision-card{
+    cursor:pointer;
+
+    
+}
+
+.decision-card:hover{
+  
+
+        bottom: calc( 3%);
+        left : calc(1%);
+        cursor:pointer;
+}
+.nodrag{
+    pointer-events: none;
+
+}
+.decision-card {
+    transition: opacity 0.5s ease-in;
+  }
+
+ .start-25{
+    left: 8%!important;
+ }
+
+
+ .icon-note {
+
+    transition: color 0.3s ease-in;
+  }
+  
+  .note-div:hover .icon-note {
+    color: var(--bg-dgray) !important; /* Change this to the color you want on hover */
+  }
+
+  .test-wave{
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"%3E%3Cpath d="M0,100 C30,0 70,0 100,100 Z" fill="%23f0f0f0" /%3E%3C/svg%3E'), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"%3E%3Cpath d="M0,0 C30,100 70,100 100,0 Z" fill="%23f0f0f0" /%3E%3C/svg%3E');
+    background-repeat: no-repeat, no-repeat;
+    background-position: top left, top right;
+    background-size: 50% 100%, 50% 100%;
+  }
