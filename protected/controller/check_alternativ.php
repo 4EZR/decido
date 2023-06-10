@@ -17,6 +17,21 @@ $criteriaModel = new Criteria_Model($pdo);
 
 
 // Call the get_weight function to check if the alternative exists
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 $weight = $criteriaModel->($criteriaID, $alternativeID);
 
 // Check if a weight was returned
