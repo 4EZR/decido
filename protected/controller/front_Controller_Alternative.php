@@ -12,7 +12,7 @@ if (isset($_GET['action'])) {
     $controller->processRequest($action);
 } else {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'No action provided']);
+    echo json_encode(['success' => false, 'message' => 'No action provided true']);
     exit;
 }
 ?>
