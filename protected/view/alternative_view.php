@@ -29,7 +29,7 @@
 
   <section id="content-2" class="container-criteria bg-brown py-4 ">
     <div class="container-xxl">
-      <div class='m-0 p-0 sticky-top '>
+      <div class='m-0 p-0  '>
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
           <ol class="breadcrumb">
             <li class="breadcrumb-item text-decoration-none text-white "><a class='text-decoration-none ' href="../../index.php">Home</a></li>

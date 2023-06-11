@@ -23,6 +23,22 @@ class Decision_Model {
 
     // Delete decision
     public function delete_decision($id) {
+        // Delete alternative weights
+        $stmt = $this->db->prepare("DELETE FROM `alternative_weight` WHERE `Alternative_ID` IN (SELECT `Alternative_ID` FROM `alternatives` WHERE `Decision_ID` = ?)");
+        $stmt->execute([$id]);
+        $stmt->closeCursor();
+    
+        // Delete alternatives
+        $stmt = $this->db->prepare("DELETE FROM `alternatives` WHERE `Decision_ID` = ?");
+        $stmt->execute([$id]);
+        $stmt->closeCursor();
+    
+        // Delete criteria
+        $stmt = $this->db->prepare("DELETE FROM `criterias` WHERE `Decision_ID` = ?");
+        $stmt->execute([$id]);
+        $stmt->closeCursor();
+    
+        // Delete the decision
         $stmt = $this->db->prepare("DELETE FROM `decisions` WHERE `decision_ID` = ?");
         $stmt->execute([$id]);
         $stmt->closeCursor();
