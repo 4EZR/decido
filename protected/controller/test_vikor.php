@@ -7,32 +7,23 @@ require_once '../../conn.php';
 $decisionModel = new Decision_Model($pdo);
 
 $alternativeModel = new Alternative_Model($pdo);
-$id = isset($_POST['id']) ? $_POST['id'] : '';
-
+$id = isset($_POST['id']) ? $_POST['id'] : '18';
 $Matrix = $decisionModel->get_decision_matrix_data($id);
-
 $fuzzy_decision_matrix = [];
-
 $criteria_matrix = [];
 
-foreach ($Matrix as $row ) {
 
-    
+foreach ($Matrix as $row ) {
     $criteriaImportance = $row['Criteria_Importance'];
     $criteria_id = $row['Criteria_ID'];
     $criteria_type = $row['Criteria_Type'];
-
-        $lmu = [
-            "L" => get_lower_bound(get_alpha($criteriaImportance)),
-            "M" => get_alpha($criteriaImportance),
-            "U" => get_upper_bound(get_alpha($criteriaImportance)),
-            "type" =>$criteria_type
-        ];
-
-        $criteria_matrix["C".$criteria_id] = $lmu;
-
-  
-
+    $lmu = [
+        "L" => get_lower_bound(get_alpha($criteriaImportance)),
+        "M" => get_alpha($criteriaImportance),
+        "U" => get_upper_bound(get_alpha($criteriaImportance)),
+        "type" =>$criteria_type
+    ];
+    $criteria_matrix["C".$criteria_id] = $lmu;
 }
 
 
@@ -248,16 +239,14 @@ function calculate_distance_closeness_triangular_fuzzy($weighted_matrix, $pis_ni
             $pis = $pis_nis_matrix[$criterion]['pis'];
             $nis = $pis_nis_matrix[$criterion]['nis'];
 
-            
-            $distance_pis = pow($values['L'] - $pis, 2) + pow($values['M'] - $pis, 2)*4 + pow($values['U'] - $pis, 2);
-            $distance_nis = pow($values['L'] - $nis, 2) + pow($values['M'] - $nis, 2)*4 + pow($values['U'] - $nis, 2);
-
+            $distance_pis = pow($pis-$values['L'] , 2) + pow( $pis-$values['M'] , 2)*4 + pow($pis-$values['U'], 2);
+    
             $distance_pis_nis = pow($pis - $nis, 2) + pow($pis - $nis, 2)*4 + pow($pis - $nis, 2);
             $d_ij = round( sqrt($distance_pis / 6) / (sqrt($distance_pis_nis / 6)), 2);
 
             $criterion_distance[$criterion] = [
                 'distance_pis' => round( sqrt($distance_pis / 6),2),
-                'distance_nis' => round( sqrt($distance_nis / 6),2),
+            
                 'd_ij' => $d_ij,
             ];
         }
@@ -330,5 +319,36 @@ function get_ranked_alternatives($matrix, $model,$id) {
 }
 $final_rank = get_ranked_alternatives($sqr, $alternativeModel, $id);
 
-echo json_encode($final_rank, JSON_PRETTY_PRINT);
+foreach ($fuzzy_decision_matrix as $key => &$values) {
+    uksort($values, function($a, $b) {
+        return strcmp($a, $b);
+    });
+}
+foreach ($weighted_matrix as $key => &$values) {
+    uksort($values, function($a, $b) {
+        return strcmp($a, $b);
+    });
+}
+foreach ($distance_matrix as $key => &$values) {
+    uksort($values, function($a, $b) {
+        return strcmp($a, $b);
+    });
+}
+
+ksort($pis_nis);
+
+$output = [
+    'kriteria_tfn' => $criteria_matrix,
+    'fuzzy_decision_matrix' => $fuzzy_decision_matrix,
+    'normalize_Criteria' => $normalized_criteria,
+    'normalize_matrix' => $weighted_matrix,
+    'weighted_matrix' => $final_fuzzy_matrix,
+    'kriteria_fpis_fnis' => $pis_nis,
+    'distance_alternative_criteria' => $distance_matrix,
+    'sqe' => $sqr
+];
+
+
+$output['final_rank'] = $final_rank;
+echo json_encode($output, JSON_PRETTY_PRINT);
 ?>

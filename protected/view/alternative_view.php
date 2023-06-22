@@ -228,9 +228,9 @@
             <i class="bx bx-dots-vertical-rounded h3 m-0 p-0"></i>
           </button>
           <ul class="dropdown-menu m-0 p-0">
-            <li class="m-0 p-0"><a class="dropdown-item edit-btn fw-bold p-2" data-id="${alternativeId}" href="#">Edit Decision</a></li>
+            <li class="m-0 p-0"><a class="dropdown-item edit-btn fw-bold p-2" data-id="${alternativeId}" href="#">Edit Alternative</a></li>
             <li><hr class="dropdown-divider m-0 p-0"></li>
-            <li class="m-0 p-0"><a class="dropdown-item del-btn fw-bold p-2 text-danger" data-id="${alternativeId}" href="#"><i class="bx bxs-trash-alt"></i> Delete Decision</a></li>
+            <li class="m-0 p-0"><a class="dropdown-item del-btn fw-bold p-2 text-danger" data-id="${alternativeId}" href="#"><i class="bx bxs-trash-alt"></i> Delete Alternative</a></li>
           </ul></div>`;
   }
 
@@ -350,7 +350,7 @@
         success: function(response) {
           var result = JSON.parse(response);
           if (result.success) {
-            showNotification("warning", "edit Decision Success");
+            showNotification("warning", "edit Alternative Success");
         
             $('#EditAlternative-Modal').modal('hide');
             $("#edit-form-criteria").trigger("reset");
@@ -365,7 +365,7 @@
 
       Swal.fire({
         title: "Are you sure?",
-        text: "You will not be able to recover this Criteria!",
+        text: "You will not be able to recover this Alternative!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Yes, delete it!",

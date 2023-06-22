@@ -63,7 +63,7 @@
             echo  '<span class="rounded-1 p-1 fs-6 shadow-sm text-secondary bg-orange border-0  mx-2 text-white fw-normal d-flex justify-content-center align-items-center p-1">incomplete</span>';
           }
           echo '</div>';
-          echo '<div class="btn-group">
+          echo '<div class="btn-group dropstart">
           <button type="button" class="btn bg-white  p-0 m-0 rounded-1 p-1  menu-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bx bx-dots-vertical-rounded h3 m-0 p-0"></i>
           </button>
@@ -352,7 +352,7 @@
             <span class="rounded-1 d-flex justify-content-center align-items-center p-1 fs-6 shadow-sm text-secondary bg-primary text-white align-middle fw-normal">decision</span>
             ${statusHtml}
         </div>
-          <div class="btn-group">
+          <div class="btn-group dropstart">
           <button type="button" class="btn bg-white  p-0 m-0 rounded-1 p-1  menu-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bx bx-dots-vertical-rounded h3 m-0 p-0"></i>
           </button>

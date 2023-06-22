@@ -33,6 +33,11 @@ class Criteria_Model {
         return $result;
     }
     public function delete_criteria($criteriaID) {
+
+        $stmt = $this->db->prepare("DELETE FROM `alternative_weight` WHERE `Criteria_ID` = ?");
+        $stmt->execute([$criteriaID]);
+        $stmt->closeCursor();
+
         $stmt = $this->db->prepare("DELETE FROM `criterias` WHERE `criteria_ID` = ?");
         $result = $stmt->execute([$criteriaID]);
         $stmt->closeCursor();

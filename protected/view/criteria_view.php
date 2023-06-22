@@ -84,9 +84,9 @@
                             <i class="bx bx-dots-vertical-rounded h3 m-0 p-0"></i>
                             </button>
                             <ul class="dropdown-menu m-0 p-0">
-                                <li class="m-0 p-0"><a class="dropdown-item edit-btn fw-bold p-2" data-id="' . $criteria['criteria_ID'] . '" href="#">Edit Decision</a></li>
+                                <li class="m-0 p-0"><a class="dropdown-item edit-btn fw-bold p-2" data-id="' . $criteria['criteria_ID'] . '" href="#">Edit Criteria</a></li>
                                 <li><hr class="dropdown-divider m-0 p-0"></li>
-                                <li class="m-0 p-0"><a class="dropdown-item del-btn fw-bold p-2 text-danger" data-id="' . $criteria['criteria_ID'] . '" href="#"><i class="bx bxs-trash-alt"></i> Delete Decision</a></li>
+                                <li class="m-0 p-0"><a class="dropdown-item del-btn fw-bold p-2 text-danger" data-id="' . $criteria['criteria_ID'] . '" href="#"><i class="bx bxs-trash-alt"></i> Delete Criteria</a></li>
                             </ul>
                         </div>';
                     echo '</div>';
@@ -134,8 +134,8 @@
                         <label for="exampleInputEmail1" class="form-label">Input Desicion title</label>
                         <select class="form-select" name='type' aria-label="Default select example" required>
                             <option selected>Select Type</option>
-                            <option value="0">Benefit Type</option>
-                            <option value="1">Cost Type</option>
+                            <option value="1">Benefit Type</option>
+                            <option value="0">Cost Type</option>
                         </select>
                     </div>
                 </div>
@@ -167,8 +167,8 @@
                         <label for="exampleInputEmail1" class="form-label">Input Criteria Type</label>
                         <select class="form-select" id='edit-type-select' name='type' aria-label="Default select example" required>
                             <option selected>Select Type</option>
-                            <option value="0">Benefit Type</option>
-                            <option value="1">Cost Type</option>
+                            <option value="1">Benefit Type</option>
+                            <option value="0">Cost Type</option>
                         </select>
                     </div>
                 </div>
@@ -250,7 +250,7 @@
     $(document).on('click', '.edit-btn', function(event) {
         var cardId = $(this).attr('data-id');
         var cardTitle = $(this).closest('.criteria-item').find('.criteria-title').text();
-        var cardType = $(this).closest('.criteria-item').find('.criteria-type').text() === "Benefit Type" ? 0 : 1;
+        var cardType = $(this).closest('.criteria-item').find('.criteria-type').text() === "Benefit Type" ? 1 : 0;
 
         $('#hidden-criteria').val(cardId);
         $('#edit-criteria-title').val(cardTitle);
@@ -314,7 +314,7 @@
                     var result = JSON.parse(response);
                     if (result.success) {
                         // Show Noty notification for success
-                        showNotification("warning", "edit Decision Success");
+                        showNotification("warning", "edit Criteria Success");
 
                         // Close the modal and reset the form
                         $('#EditCriteria-Modal').modal('hide');
@@ -347,14 +347,14 @@
                             var result = JSON.parse(response);
                             if (result.success) {
                                 // Show Noty notification for success
-                                showNotification("error", "Delete Decision Success");
+                                showNotification("error", "Delete Criteria Success");
                                 refreshCriteriaList();
                             }
                         },
                     });
                 } else {
                     // Show Noty notification for cancel
-                    showNotification("error", "Delete Decision Success");
+                    showNotification("error", "Delete Criteria Canceled");
                 }
             });
         });

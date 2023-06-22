@@ -7,14 +7,13 @@ require_once '../../conn.php';
 $decisionModel = new Decision_Model($pdo);
 
 $alternativeModel = new Alternative_Model($pdo);
-$id = isset($_POST['id']) ? $_POST['id'] : '';
+$id = isset($_POST['id']) ? $_POST['id'] : '18';
 
 $Matrix = $decisionModel->get_decision_matrix_data($id);
 
 $fuzzy_decision_matrix = [];
 
 $criteria_matrix = [];
-
 foreach ($Matrix as $row ) {
 
     
@@ -121,7 +120,6 @@ function get_upper_bound_tfn($mid) {
 
 
 
-
 function findMaxValues($inputArray) {
     $result = [];
 
@@ -165,12 +163,14 @@ foreach ($fuzzy_decision_matrix as $alternative_id => $criteria_values)
             $m_value = round(($normalized_criteria[$criteria_title])/$lmu['M'], 2);
             $u_value = round(($normalized_criteria[$criteria_title])/$lmu['U'], 2);
         }
-        $weighted_lmu = ['L' => $l_value, 'M' => $m_value, 'U' => $u_value, 'type'=>$lmu['type']];
+        $weighted_lmu = ['L' => $l_value, 'M' => $m_value, 'U' => $u_value];
 
         // Fill in the weighted matrix
         $weighted_matrix[$alternative_id][$criteria_title] = $weighted_lmu;
     }
 }
+
+
 
 $final_fuzzy_matrix = [];
 foreach ($weighted_matrix as $alternative_id => $criteria_values)
@@ -180,8 +180,7 @@ foreach ($weighted_matrix as $alternative_id => $criteria_values)
         $l_value = round(($lmu['L'] * $criteria_matrix[$criteria_title]['L']),2);
         $m_value = round(($lmu['M'] * $criteria_matrix[$criteria_title]['M']),2);
         $u_value =round(($lmu['U'] * $criteria_matrix[$criteria_title]['U']),2);
-        $type_value = $lmu['type'];
-        $weighted_lmu = ['L' => $l_value, 'M' => $m_value, 'U' => $u_value, 'type'=>$type_value];
+        $weighted_lmu = ['L' => $l_value, 'M' => $m_value, 'U' => $u_value];
 
         // Fill in the weighted matrix
         $final_fuzzy_matrix[$alternative_id][$criteria_title] = $weighted_lmu;
@@ -199,29 +198,16 @@ foreach ($weighted_matrix as $alternative_id => $criteria_values)
                     $pis[$criterion] = $values;
                     $nis[$criterion] = $values;
                 } else {
-                    if ($values['type'] == 1) { // Benefit type
-                        $pis[$criterion] = [
-                            'L' => max($pis[$criterion]['L'], $values['L']),
-                            'M' => max($pis[$criterion]['M'], $values['M']),
-                            'U' => max($pis[$criterion]['U'], $values['U'])
-                        ];
-                        $nis[$criterion] = [
-                            'L' => min($nis[$criterion]['L'], $values['L']),
-                            'M' => min($nis[$criterion]['M'], $values['M']),
-                            'U' => min($nis[$criterion]['U'], $values['U'])
-                        ];
-                    } else { // Cost type
-                        $pis[$criterion] = [
-                            'L' => min($pis[$criterion]['L'], $values['L']),
-                            'M' => min($pis[$criterion]['M'], $values['M']),
-                            'U' => min($pis[$criterion]['U'], $values['U'])
-                        ];
-                        $nis[$criterion] = [
-                            'L' => max($nis[$criterion]['L'], $values['L']),
-                            'M' => max($nis[$criterion]['M'], $values['M']),
-                            'U' => max($nis[$criterion]['U'], $values['U'])
-                        ];
-                    }
+                    $pis[$criterion] = [
+                        'L' => max($pis[$criterion]['L'], $values['L']),
+                        'M' => max($pis[$criterion]['M'], $values['M']),
+                        'U' => max($pis[$criterion]['U'], $values['U'])
+                    ];
+                    $nis[$criterion] = [
+                        'L' => min($nis[$criterion]['L'], $values['L']),
+                        'M' => min($nis[$criterion]['M'], $values['M']),
+                        'U' => min($nis[$criterion]['U'], $values['U'])
+                    ];
                 }
             }
         }
@@ -248,17 +234,12 @@ function calculate_distance_closeness_triangular_fuzzy($weighted_matrix, $pis_ni
             $pis = $pis_nis_matrix[$criterion]['pis'];
             $nis = $pis_nis_matrix[$criterion]['nis'];
 
-            
-            $distance_pis = pow($values['L'] - $pis, 2) + pow($values['M'] - $pis, 2)*4 + pow($values['U'] - $pis, 2);
-            $distance_nis = pow($values['L'] - $nis, 2) + pow($values['M'] - $nis, 2)*4 + pow($values['U'] - $nis, 2);
-
-            $distance_pis_nis = pow($pis - $nis, 2) + pow($pis - $nis, 2)*4 + pow($pis - $nis, 2);
-            $d_ij = round( sqrt($distance_pis / 6) / (sqrt($distance_pis_nis / 6)), 2);
+            $distance_pis = pow($values['L'] - $pis, 2) + pow($values['M'] - $pis, 2) + pow($values['U'] - $pis, 2);
+            $distance_nis = pow($values['L'] - $nis, 2) + pow($values['M'] - $nis, 2) + pow($values['U'] - $nis, 2);
 
             $criterion_distance[$criterion] = [
-                'distance_pis' => round( sqrt($distance_pis / 6),2),
-                'distance_nis' => round( sqrt($distance_nis / 6),2),
-                'd_ij' => $d_ij,
+                'distance_pis' => round( sqrt($distance_pis / 3),2),
+                'distance_nis' => round(sqrt($distance_nis / 3),2),
             ];
         }
 
@@ -270,65 +251,110 @@ function calculate_distance_closeness_triangular_fuzzy($weighted_matrix, $pis_ni
 
 $distance_matrix =calculate_distance_closeness_triangular_fuzzy($final_fuzzy_matrix,$pis_nis);
 
-function vikor($data, $weights, $v = 0.5) {
-    $si = [];
-    $ri = [];
-    $qi = [];
 
-    // Calculate si and ri values
-    foreach ($data as $alternative => $criteria) {
-        $weighted_distances = [];
-        foreach ($criteria as $criterion => $values) {
-            $weighted_distances[] = $values['d_ij'] * $weights[$criterion];
-        }
-        $si[$alternative] = array_sum($weighted_distances);
-        $ri[$alternative] = max($weighted_distances);
-    }
-
-    // Calculate qi values
-    $min_si = min($si);
-    $max_si = max($si);
-    $min_ri = min($ri);
-    $max_ri = max($ri);
-    foreach ($si as $alternative => $value) {
-        $qi[$alternative] = $v * ($value - $min_si) / ($max_si - $min_si) +
-                            (1 - $v) * ($ri[$alternative] - $min_ri) / ($max_ri - $min_ri);
-    }
-
-    return ['si' => $si, 'ri' => $ri, 'qi' => $qi];
-}
-
-$sqr = vikor($distance_matrix, $normalized_criteria);
-
-
-function get_ranked_alternatives($matrix, $model,$id) {
-    $Q_values = $matrix['qi'];
-
-    // Sort alternatives by qi values
-    asort($Q_values);
-
+function calculate_fuzzy_closeness_coefficient($distance_matrix) {
     $result = [];
-    $rank = 1;
-    foreach ($Q_values as $alternative_id => $q_value) {
-        $alternatives = $model->get_alternative($id);
-        $numeric_id = substr($alternative_id, 1); // Remove the "A" prefix
-        
-        foreach ($alternatives as $alternative) {
-            if ($numeric_id == $alternative["Alternative_ID"]) {
-                $result[$alternative_id] = [
-                    'alternative_name' => $alternative["Alternative_Title"],
-                    'q_value' => $q_value,
-                    'rank' => $rank,
-                ];
-                break;
-            }
+
+    foreach ($distance_matrix as $alternative_key => $criterion_distance) {
+        $distance_pis_sum = 0;
+        $distance_nis_sum = 0;
+
+        foreach ($criterion_distance as $criterion => $values) {
+            $distance_pis = $values['distance_pis'];
+            $distance_nis = $values['distance_nis'];
+
+            $distance_pis_sum += $distance_pis;
+            $distance_nis_sum += $distance_nis;
         }
-        $rank++;
+
+        $cc = round( $distance_nis_sum / ($distance_pis_sum + $distance_nis_sum),2);
+
+        $result[$alternative_key] = [
+            'd_plus' => $distance_pis_sum,
+            'd_minus' => $distance_nis_sum,
+            'cc' => $cc
+        ];
     }
 
     return $result;
 }
-$final_rank = get_ranked_alternatives($sqr, $alternativeModel, $id);
 
-echo json_encode($final_rank, JSON_PRETTY_PRINT);
+$fuzzy_closeness=calculate_fuzzy_closeness_coefficient($distance_matrix);
+
+
+
+function sort_alternatives_by_cc($fuzzy_closeness_coefficient) {
+    uasort($fuzzy_closeness_coefficient, function($a, $b) {
+        return $b['cc'] <=> $a['cc'];
+    });
+
+    $ranked_alternatives = [];
+    $rank = 1;
+
+    foreach ($fuzzy_closeness_coefficient as $alternative => $values) {
+        $ranked_alternatives[] = [
+            'alternative' => $alternative,
+            'rank' => $rank,
+            'cc' => $values['cc']
+        ];
+        $rank++;
+    }
+    foreach ($ranked_alternatives as &$alternative) {
+        $alternative['alternative_id'] = substr($alternative['alternative'], 1);
+        unset($alternative['alternative']);
+    }
+
+    return $ranked_alternatives;
+}
+$final_rank=sort_alternatives_by_cc($fuzzy_closeness);
+
+foreach ($final_rank as &$item) {
+    $alternatives = $alternativeModel->get_alternative($id);
+    foreach ($alternatives as $alternative) {
+        if ($item["alternative_id"] == $alternative["Alternative_ID"]) {
+            $item["alternative_name"] = $alternative["Alternative_Title"];
+            break;
+        }
+    }
+}
+
+
+foreach ($final_fuzzy_matrix as $key => &$values) {
+    uksort($values, function($a, $b) {
+        return strcmp($a, $b);
+    });
+}
+foreach ($fuzzy_decision_matrix as $key => &$values) {
+    uksort($values, function($a, $b) {
+        return strcmp($a, $b);
+    });
+}
+foreach ($weighted_matrix as $key => &$values) {
+    uksort($values, function($a, $b) {
+        return strcmp($a, $b);
+    });
+}
+foreach ($distance_matrix as $key => &$values) {
+    uksort($values, function($a, $b) {
+        return strcmp($a, $b);
+    });
+}
+
+
+ksort($pis_nis);
+
+$output = [
+    'kriteria_tfn' => $criteria_matrix,
+    'fuzzy_decision_matrix' => $fuzzy_decision_matrix,
+    'normalize_Criteria' => $normalized_criteria,
+    'normalize_matrix' => $weighted_matrix,
+    'weighted_matrix' => $final_fuzzy_matrix,
+    'kriteria_fpis_fnis' => $pis_nis,
+    'distance_alternative_criteria' => $distance_matrix,
+    'fuzzy_closeness_matrix' => $fuzzy_closeness
+];
+
+
+$output['final_rank'] = $final_rank;
+echo json_encode($output, JSON_PRETTY_PRINT);
 ?>

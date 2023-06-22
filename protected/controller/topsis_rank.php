@@ -19,12 +19,13 @@ foreach ($Matrix as $row ) {
     
     $criteriaImportance = $row['Criteria_Importance'];
     $criteria_id = $row['Criteria_ID'];
-   
+    $criteria_type = $row['Criteria_Type'];
 
         $lmu = [
             "L" => get_lower_bound(get_alpha($criteriaImportance)),
             "M" => get_alpha($criteriaImportance),
-            "U" => get_upper_bound(get_alpha($criteriaImportance))
+            "U" => get_upper_bound(get_alpha($criteriaImportance)),
+            "type" =>$criteria_type
         ];
 
         $criteria_matrix["C".$criteria_id] = $lmu;
@@ -39,13 +40,15 @@ foreach ($Matrix as $row ) {
     $alternative_id = $row['Alternative_ID'];
     $criteriaImportance = $row['Criteria_Importance'];
     $criteria_id = $row['Criteria_ID'];
-    $criteria_title = $row['Criteria_Title'];
+    $criteria_title = $row['Criteria_Title'];   
+    $criteria_type = $row['Criteria_Type'];
     $weight = $row['Weight'];
 
         $lmu = [
             "L" => get_lower_bound_tfn(get_alpha_tfn($weight)),
             "M" => get_alpha_tfn($weight),
-            "U" => get_upper_bound_tfn(get_alpha_tfn($weight))
+            "U" => get_upper_bound_tfn(get_alpha_tfn($weight)),
+            "type" =>$criteria_type
         ];
 
         $fuzzy_decision_matrix["A".$alternative_id]["C".$criteria_id] = $lmu;
@@ -93,13 +96,16 @@ foreach ($importanceLevels as $level =>&$value ) {
 
 
 
+
 function get_lower_bound($mid) {
-    return ($mid - 0.15 < 0) ? 0 : ($mid - 0.15);
+    $lower_bound=($mid - 0.15 < 0) ? 0 : ($mid - 0.15);
+    return round($lower_bound, 2);
 }
 
 
 function get_upper_bound($mid) {
-    return ($mid + 0.15 > 1) ? 1 : ($mid + 0.15);
+    $upper_bound = ($mid + 0.15 > 1) ? 1 : ($mid + 0.15);
+    return round($upper_bound, 2);
 }
 
 
@@ -114,18 +120,23 @@ function get_upper_bound_tfn($mid) {
 
 
 
-
 function findMaxValues($inputArray) {
     $result = [];
 
     foreach ($inputArray as $subArray) {
         foreach ($subArray as $key => $values) {
             if (!isset($result[$key])) {
-                $result[$key] = 0;
+                $result[$key] = ($values['type'] == 1) ? 0 : PHP_INT_MAX;
             }
-
-            $maxValue = max($values['L'], $values['M'], $values['U']);
-            $result[$key] = max($result[$key], $maxValue);
+            if ($values['type']==1){
+                $maxValue = max($values['L'], $values['M'], $values['U']);
+                $result[$key] = max($result[$key], $maxValue);
+            }
+            else{
+                $maxValue = $values['L'];
+                $result[$key] = min($result[$key], $maxValue);
+            }
+           
         }
     }
 
@@ -134,15 +145,24 @@ function findMaxValues($inputArray) {
 
 $normalized_criteria = findMaxValues($fuzzy_decision_matrix);
 
-
 foreach ($fuzzy_decision_matrix as $alternative_id => $criteria_values)
 {
     foreach ($criteria_values as $criteria_title => $lmu)
+
     {
-        $l_value = round(($lmu['L'] / $normalized_criteria [$criteria_title]),2);
-        $m_value = round(($lmu['M'] / $normalized_criteria [$criteria_title]),2);
-        $u_value = round(($lmu['U'] / $normalized_criteria [$criteria_title]),2);
-        $weighted_lmu = ['L' => $l_value, 'M' => $m_value, 'U' => $u_value];
+
+        if ($lmu['type'] == 1)
+        {
+            $l_value = round(($lmu['L'] / $normalized_criteria[$criteria_title]), 2);
+            $m_value = round(($lmu['M'] / $normalized_criteria[$criteria_title]), 2);
+            $u_value = round(($lmu['U'] / $normalized_criteria[$criteria_title]), 2);
+        }
+        else{
+            $l_value = round(($normalized_criteria[$criteria_title])/$lmu['L'] , 2);
+            $m_value = round(($normalized_criteria[$criteria_title])/$lmu['M'], 2);
+            $u_value = round(($normalized_criteria[$criteria_title])/$lmu['U'], 2);
+        }
+        $weighted_lmu = ['L' => $l_value, 'M' => $m_value, 'U' => $u_value, 'type'=>$lmu['type']];
 
         // Fill in the weighted matrix
         $weighted_matrix[$alternative_id][$criteria_title] = $weighted_lmu;
@@ -152,6 +172,7 @@ foreach ($fuzzy_decision_matrix as $alternative_id => $criteria_values)
 
 
 $final_fuzzy_matrix = [];
+
 foreach ($weighted_matrix as $alternative_id => $criteria_values)
 {
     foreach ($criteria_values as $criteria_title => $lmu)
@@ -159,24 +180,24 @@ foreach ($weighted_matrix as $alternative_id => $criteria_values)
         $l_value = round(($lmu['L'] * $criteria_matrix[$criteria_title]['L']),2);
         $m_value = round(($lmu['M'] * $criteria_matrix[$criteria_title]['M']),2);
         $u_value =round(($lmu['U'] * $criteria_matrix[$criteria_title]['U']),2);
-        $weighted_lmu = ['L' => $l_value, 'M' => $m_value, 'U' => $u_value];
+        $type_value = $lmu['type'];
+        $weighted_lmu = ['L' => $l_value, 'M' => $m_value, 'U' => $u_value, 'type'=>$type_value];
 
         // Fill in the weighted matrix
         $final_fuzzy_matrix[$alternative_id][$criteria_title] = $weighted_lmu;
     }
 }
 
-
-
-    function calculate_pis_nis($matrix) {
-        $pis = [];
-        $nis = [];
-        foreach ($matrix as $alternative) {
-            foreach ($alternative as $criterion => $values) {
-                if (!isset($pis[$criterion])) {
-                    $pis[$criterion] = $values;
-                    $nis[$criterion] = $values;
-                } else {
+function calculate_pis_nis($matrix) {
+    $pis = [];
+    $nis = [];
+    foreach ($matrix as $alternative) {
+        foreach ($alternative as $criterion => $values) {
+            if (!isset($pis[$criterion])) {
+                $pis[$criterion] = $values;
+                $nis[$criterion] = $values;
+            } else {
+                if ($values['type'] == 1) { // Benefit type
                     $pis[$criterion] = [
                         'L' => max($pis[$criterion]['L'], $values['L']),
                         'M' => max($pis[$criterion]['M'], $values['M']),
@@ -187,20 +208,32 @@ foreach ($weighted_matrix as $alternative_id => $criteria_values)
                         'M' => min($nis[$criterion]['M'], $values['M']),
                         'U' => min($nis[$criterion]['U'], $values['U'])
                     ];
+                } else { // Cost type
+                    $pis[$criterion] = [
+                        'L' => min($pis[$criterion]['L'], $values['L']),
+                        'M' => min($pis[$criterion]['M'], $values['M']),
+                        'U' => min($pis[$criterion]['U'], $values['U'])
+                    ];
+                    $nis[$criterion] = [
+                        'L' => max($nis[$criterion]['L'], $values['L']),
+                        'M' => max($nis[$criterion]['M'], $values['M']),
+                        'U' => max($nis[$criterion]['U'], $values['U'])
+                    ];
                 }
             }
         }
-    
-        $result = [];
-        foreach ($pis as $criterion => $values) {
-            $result[$criterion] = [
-                'pis' => $values['U'],
-                'nis' => $nis[$criterion]['L']
-            ];
-        }
-    
-        return $result;
     }
+
+    $result = [];
+    foreach ($pis as $criterion => $values) {
+        $result[$criterion] = [
+            'pis' => $values['U'],
+            'nis' => $nis[$criterion]['L']
+        ];
+    }
+
+    return $result;
+}
 $pis_nis = calculate_pis_nis($final_fuzzy_matrix);
 
 function calculate_distance_closeness_triangular_fuzzy($weighted_matrix, $pis_nis_matrix) {
